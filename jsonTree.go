@@ -64,6 +64,9 @@ func drawBox(level int, step int, operation Operation, output [][]string) (int, 
 	output[level+1][step-1] = ">"
 	output[level+1][step-2] = "-"
 	output[level+1][step-3] = "-"
+	output[level+1][step-4] = "-"
+	output[level+1][step+length+3] = "o"
+
 
 	output[level+2][step] = "|"
 	output[level+2][step+length+2] = "|"
@@ -96,13 +99,18 @@ func drawGraph(level int, step int, operations []Operation, output [][]string) (
 		if operation.Type_op == "fork" {
 			child := operation.Children [0]
 			
+			output[level][step-3]="F"	
+			
 			stepBefore := step
+			//levelBefore := level
+
 			level,_,output = drawGraph(level,step,[]Operation{child},output)
 
 
-			 for _,child := range operation.Children[1:] {
-			 	 level=level+4
+			for _,child := range operation.Children[1:] {
+			 	 level=level+5
 				 
+				 output[level-3][stepBefore-3] = "|"	
 				 output[level-2][stepBefore-3] = "|"	
 				 output[level-1][stepBefore-3] = "|"	
 				 output[level][stepBefore-3] = "|"	
@@ -110,7 +118,18 @@ func drawGraph(level int, step int, operations []Operation, output [][]string) (
 				 output[level+1][stepBefore-2] = "-"	
 				 output[level+1][stepBefore-1] = ">"
 				 level,step,output = drawGraph(level,stepBefore,[]Operation{child},output)
-			 }
+			}
+			fmt.Printf("LEVEL %d",level)
+			fmt.Printf("STEP BEFORE %d\n",stepBefore)
+			i := level
+
+			for output[i][stepBefore-3] != "F" {
+				output[i][stepBefore-3]="|"
+				output[i-1][stepBefore-3]="|"
+				output[i-2][stepBefore-3]="|"
+				output[i-3][stepBefore-3]="|"
+				i=i-5
+			}
 		}
 
 		if operation.Type_op == "conditionnal" {
