@@ -37,7 +37,23 @@ func parse(filename string) Operation {
 	return c
 }
 
+// This function draws a box for an operation from its top left corner location
+//
+// INPUTS
+// level : vertical strip (top left corner)
+// step : horizontal strip (top left corner)
+// operation : operation to draw
+// output: array of characters of the box before drawing
+//
+// OUTPUTS
+// bottom right corner vertical strip
+// bottom right corner horizontal strip
+// tree with the new box
 func drawBox(level int, step int, operation Operation, output [][]string) (int, int, [][]string){
+
+	// arbitrary length of the box
+	// TODO change with the actual size.
+
 	length := 10
 	fmt.Printf(operation.Label)	
 	fmt.Printf("\n")
@@ -80,7 +96,12 @@ func drawBox(level int, step int, operation Operation, output [][]string) (int, 
 
 }
 
-// Print a list of operations for a level and a step
+// Functional drawing of the graph
+// 
+// INPUTS
+//
+// OUTPUTS
+//
 func drawGraph(level int, step int, operations []Operation, output [][]string) (int, int, [][]string) { 
 
 	for _,operation := range operations {
@@ -146,7 +167,7 @@ func drawGraph(level int, step int, operations []Operation, output [][]string) (
 func main() {
 
 	
-
+	// TODO : change this fixed array with dynamic allocation (append,...)
 	output :=  make([][]string,50)
 	for i:= 0; i<50; i++ {
 		output[i] = make([]string,100)
@@ -156,6 +177,8 @@ func main() {
 			output[i][j]=" "
 		}
 	}
+
+	// First arrow
 	output[1][0]="-"
 	output[1][1]="-"
 	output[1][2]="-"
@@ -164,15 +187,23 @@ func main() {
 
 	fmt.Printf("\n")
 	fmt.Printf("Loading file and parsing\n")
+
+	// Parsing of the JSON
 	var jsonContent Operation
 
 	jsonContent = parse("D:/Utilisateurs/hubinac/Documents/test.goo")
+
+	// Computation of the tree
 	_,_,output = drawGraph(0,5,[]Operation{jsonContent},output)
+
+	// Drawing of the tree
 	for i := 0; i < len(output); i++ {
 		for j := 0; j < len(output[i]);j++{
 			fmt.Print(output[i][j])
 		}
 		fmt.Printf("\n")
 	}
+
+	// Bye
 	fmt.Printf("End of program")
 }
