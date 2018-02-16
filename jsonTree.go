@@ -5,18 +5,51 @@ import (
 		"encoding/json"
 		"io/ioutil"
 		"os"
+		"sort"
        )
 
 type Parameters struct {
 	label			string		`json:"label"`
 }
 
+type Operations []Operation
+
+func (o Operations) Len() int {
+	return len(o)
+}
+
+func (o Operations) Less(i, j int) bool{
+	return Depth(o[i],0) > Depth(o[j],0)
+}
+
+func (o Operations) Swap(i, j int){
+	o[i],o[j] = o[j], o[i]
+}
+
+func Depth(o Operation, currentDepth int) int {
+	d := currentDepth 
+	if o.Children!=nil {
+		for _,child := range o.Children {
+			dt := Depth(child,d+1)
+			if d<dt {
+
+				d = d + dt
+
+			}
+		}
+	}else{
+		return d
+	}
+	return d
+}
+
+
 type Operation struct {
 	Label			string		`json:"label"`
 	Type_op			string		`json:"type_op"`
 	Condition_False		*Operation	`json:"condition_false,omitempty"`
 	Condition_True		*Operation	`json:"condition_true,omitempty"`
-	Children		[]Operation	`json:"children"`
+	Children		Operations	`json:"children"`
 //	node			string		`json:"node"`
 //	target			string		`json:"target"`
 //	expectedDuration	string		`json:"expectedDuration"`
@@ -68,16 +101,6 @@ func drawBox(level int, step int, box [][]string, output [][]string)(int,int,[][
 		}
 	}
 
-	fmt.Print("len output ")
-	fmt.Print(len(output))
-	fmt.Print("\n")
-	fmt.Print("level ")
-	fmt.Print(level )
-	fmt.Print("\n")
-	fmt.Print("step ")
-	fmt.Print(step)
-	fmt.Print("\n")
-	
 	// expanding output array
 	for i:=0; i<len(box); i++{
 		if len(output[i+level])<step+len(box[i]){
@@ -89,14 +112,6 @@ func drawBox(level int, step int, box [][]string, output [][]string)(int,int,[][
 		}
 	}
 
-	fmt.Print("len output ")
-	fmt.Print(len(output[level]))
-	fmt.Print("\n")
-	fmt.Print("level ")
-	fmt.Print(level)
-	fmt.Print("\n")
-
-
 	// copying box in output
 	for i:=0; i<len(box);i++{
 		for j:= 0; j< len(box[i]);j++{
@@ -104,11 +119,49 @@ func drawBox(level int, step int, box [][]string, output [][]string)(int,int,[][
 		}
 	}
 
-
 	return level,step+len(box[0]),output
 }
 
+// This function draws a blank to fill the gap in a fork.
+//
+// INPUTS
+// level : vertical strip (top left corner)
+// step : final length needed
+// output: array of characters of the box before drawing
+//
+// OUTPUTS
+// tree with the new box
+func addBlank(level int, stepBefore int, stepFinal int, output [][]string) ([][]string){
 
+	// arbitrary length of the box
+	// TODO change with the actual size.
+	
+	length := stepFinal-stepBefore
+	
+	height := 4
+	box :=  make([][]string,height)
+
+	if length != 0 {
+
+
+
+		// init empty box
+
+		for i:= 0; i<height; i++ {
+			// 8 = 5 for the arrow, 3 for the final O
+			box[i] = make([]string,length)
+			for j:=0; j<len(box[i]);j++{
+				box[i][j]=" "
+			}
+
+		}
+
+		_,_,output = drawBox(level,stepBefore,box,output)
+	}
+
+
+	return output
+}
 // This function draws a line to fill the gap in a fork.
 //
 // INPUTS
@@ -127,10 +180,6 @@ func addLine(level int, stepBefore int, stepFinal int, output [][]string) ([][]s
 	
 	height := 4
 	box :=  make([][]string,height)
-	fmt.Printf("level=%d\n",level)	
-	fmt.Printf("stepBefore=%d\n",stepBefore)	
-	fmt.Printf("stepFinal=%d\n",stepFinal)	
-	fmt.Printf("\n")
 
 
 
@@ -159,7 +208,6 @@ func addLine(level int, stepBefore int, stepFinal int, output [][]string) ([][]s
 	}
 
 
-	printArray(output)
 	return output
 }
 
@@ -184,13 +232,6 @@ func addBox(level int, step int, operation Operation, output [][]string) (int, i
 	length := 10
 	height := 4
 
-	fmt.Printf(operation.Label)	
-	fmt.Printf("\n")
-	fmt.Printf("level=%d\n",level)	
-	fmt.Printf("step=%d\n",step)	
-	fmt.Printf("\n")
-
-	// TODO : change this fixed array with dynamic allocation (append,...)
 	box :=  make([][]string,height)
 	for i:= 0; i<height; i++ {
 		// 8 = 5 for the arrow, 3 for the final O
@@ -242,6 +283,7 @@ func addBox(level int, step int, operation Operation, output [][]string) (int, i
 	return drawBox(level,step,box,output)
 }
 
+
 // Functional drawing of the graph
 // 
 // INPUTS
@@ -252,9 +294,6 @@ func drawGraph(level int, step int, operations []Operation, output [][]string) (
 
 	for _,operation := range operations {
 
-
-//		fmt.Print(operation.Label)
-		fmt.Print("\n")
 		if operation.Type_op == "operation" {
 			level,step,output = addBox(level,step,operation,output)
 		}
@@ -267,68 +306,48 @@ func drawGraph(level int, step int, operations []Operation, output [][]string) (
 		}
 
 		if operation.Type_op == "fork" {
-			child := operation.Children [0]
-			
-
 			
 			stepBefore := step
-			levelBefore := level
+
 			maxStep := step
 			tmp_step :=0
-			
-			level,tmp_step,output = drawGraph(level,step,[]Operation{child},output)
+			tmp_level := level-4
+			sort.Sort(Operations(operation.Children))
 
-			if tmp_step > maxStep {
-				maxStep=tmp_step
-			}
-
-			for _,child := range operation.Children[1:] {
-			 	 level=level+4
+			for _,child := range operation.Children {
 				 
-				 level,tmp_step,output = drawGraph(level,stepBefore,[]Operation{child},output)
-				 output[level-3][stepBefore] = "|"	
-				 output[level-2][stepBefore] = "|"	
-				 output[level-1][stepBefore] = "|"	
-				 output[level][stepBefore] = "|"	
-				 output[level+1][stepBefore] = "|"
+				tmp_level,tmp_step,output = drawGraph(tmp_level+4,step+2,[]Operation{child},output)
+
 				if tmp_step > maxStep {
 					maxStep=tmp_step
 				}
+
+				// Filling lines
+				addLine(tmp_level,tmp_step,maxStep+1,output)
+				output[tmp_level][maxStep]="!"
+				output[tmp_level+1][maxStep]="!"
+				output[tmp_level+1][maxStep-1]=">"
+				output[tmp_level+2][maxStep]="!"
+				output[tmp_level+3][maxStep]="!"
+
 			}
 		
-			fmt.Printf("LEVEL %d",levelBefore)
-			fmt.Printf("STEP BEFORE %d\n",stepBefore)
-			i := level
-
+			i := tmp_level +1
 			// Opening bracket
 
-			output[levelBefore][stepBefore]="F"	
+			output[level][stepBefore]="F"	
+
 			for output[i][stepBefore] != "F" {
 				output[i][stepBefore]="|"
-				output[i-1][stepBefore]="|"
-				output[i-2][stepBefore]="|"
-				output[i-3][stepBefore]="|"
-				i=i-4
+				i--
 			}
 
-			// Filling lines
-			for i:=levelBefore; i<level; i=i+4{
-				addLine(i,len(output[i])-2,maxStep+1,output)
-			}
-
-			// Closing bracket
-			for i:=levelBefore+2;i<level+1;i++ {
-				output[i][maxStep-1]="^"
-			}
-			printArray(output)
-			level = levelBefore
-			step = maxStep
-
+			step = maxStep +1
+			level = tmp_level
 		}
 
 		if operation.Type_op == "conditionnal" {
-		
-		
+			// TODO conditionnal	
 		}
 
 	}
