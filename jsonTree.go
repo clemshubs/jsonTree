@@ -49,9 +49,10 @@ type Operation struct {
 	Type_op			string		`json:"type_op"`
 	Condition_False		*Operation	`json:"condition_false,omitempty"`
 	Condition_True		*Operation	`json:"condition_true,omitempty"`
+	Depends_On		*Operation	`json:"depends_on,omitempty"`
 	Children		Operations	`json:"children"`
 //	node			string		`json:"node"`
-//	target			string		`json:"target"`
+	target			string		`json:"target,omitempty"`
 //	expectedDuration	string		`json:"expectedDuration"`
 //	params			string		`json:"params"`
 }
@@ -162,6 +163,77 @@ func addBlank(level int, stepBefore int, stepFinal int, output [][]string) ([][]
 
 	return output
 }
+
+// This function draws a IF box.
+//
+// INPUTS
+// level : vertical strip (top left corner)
+// levelFinal: final length needed
+// step : vertical blablabla
+// output: array of characters of the box before drawing
+//
+// OUTPUTS
+// tree with the new box
+func addConditionalBox(level int, levelFinal int, step int, output [][]string) (int,int,[][]string){
+
+	// arbitrary length of the box
+	// TODO change with the actual size.
+	
+	height := levelFinal-level+4
+	
+	length := 15
+	box :=  make([][]string,height)
+
+
+		// init empty box
+
+	for i:= 0; i<height; i++ {
+		// 8 = 5 for the arrow, 3 for the final O
+		box[i] = make([]string,length)
+		for j:=0; j<len(box[i]);j++{
+			box[i][j]=" "
+		}
+
+	}
+
+	for j:=0; j<len(box[1]);j++{
+		box[1][j]="-"
+	}
+
+	box[1][5]="["
+	box[1][6]=" "
+	box[1][7]="S"
+	box[1][8]="I"
+	box[1][9]=" "
+	box[1][10]="]"
+
+
+	for j:=4; j<len(box[1]);j++{
+		box[levelFinal+1][j]="-"
+	}
+
+	box[height-3][5]="["
+	box[height-3][6]="S"
+	box[height-3][7]="I"
+	box[height-3][8]="N"
+	box[height-3][9]="O"
+	box[height-3][10]="N"
+	box[height-3][11]="]"
+
+	fmt.Printf("height %d\n",height)
+	fmt.Printf("box %d\n",len(box))
+	i:=height-3
+	for box[i][3]!="-"{
+		box[i][3]="|"
+		i--
+	}
+
+	level,step,output = drawBox(level,step,box,output)
+
+	return level,step,output
+}
+
+
 // This function draws a line to fill the gap in a fork.
 //
 // INPUTS
@@ -346,8 +418,22 @@ func drawGraph(level int, step int, operations []Operation, output [][]string) (
 			level = tmp_level
 		}
 
-		if operation.Type_op == "conditionnal" {
-			// TODO conditionnal	
+		if operation.Type_op == "condition" {
+			// TODO conditionnal
+			tmp_level := 0
+			tmp_step := 0
+
+
+			tmp_level,tmp_step,output = drawGraph(level,step+14,[]Operation{*operation.Condition_True},output)
+			//output[level+1][step-3]="S"
+			//output[level+1][step-2]="I"
+			tmp_level,tmp_step,output = drawGraph(tmp_level+4,step+14,[]Operation{*operation.Condition_False},output)
+
+			tmp_level,tmp_step,output = addConditionalBox(level,tmp_level,step,output)
+
+
+			step = tmp_step
+			level = tmp_level
 		}
 
 	}
@@ -368,7 +454,7 @@ func main() {
 	// Parsing of the JSON
 	var jsonContent Operation
 
-	jsonContent = parse("D:/Utilisateurs/hubinac/Documents/test.goo")
+	jsonContent = parse("D:/Utilisateurs/hubinac/Documents/testCondGOO.goo")
 
 	// Computation of the tree
 	_,_,output = drawGraph(0,0,[]Operation{jsonContent},output)
