@@ -1,4 +1,4 @@
-package main // import clemshubs/jsonTreeTest
+package main // import "clemshubs/jsonTreeTest"
 
 import (
 		"fmt"
