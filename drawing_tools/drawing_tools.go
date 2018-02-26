@@ -94,7 +94,7 @@ func PrintArray(array [][]string){
 //
 // OUPUTS
 // the array with the new box
-func DrawBox(level int, step int, box [][]string, output [][]string)(int,int,[][]string){
+func drawBox(level int, step int, box [][]string, output [][]string)(int,int,[][]string){
 
 	// if a line doesn't exist, we add it
 	if len(output)<level+4 {
@@ -159,7 +159,7 @@ func addBlank(level int, stepBefore int, stepFinal int, output [][]string) ([][]
 
 		}
 
-		_,_,output = DrawBox(level,stepBefore,box,output)
+		_,_,output = drawBox(level,stepBefore,box,output)
 	}
 
 
@@ -230,7 +230,7 @@ func addConditionalBox(level int, levelFinal int, step int, output [][]string) (
 		i--
 	}
 
-	level,step,output = DrawBox(level,step,box,output)
+	level,step,output = drawBox(level,step,box,output)
 
 	return level,step,output
 }
@@ -278,7 +278,7 @@ func addLine(level int, stepBefore int, stepFinal int, output [][]string) ([][]s
 
 		//box[1][len(box[1])-1]=">"
 
-		_,_,output = DrawBox(level,stepBefore,box,output)
+		_,_,output = drawBox(level,stepBefore,box,output)
 	}
 
 
@@ -354,7 +354,7 @@ func addBox(level int, step int, operation Operation, output [][]string) (int, i
 		box[2][i]=""
 	}
 	
-	return DrawBox(level,step,box,output)
+	return drawBox(level,step,box,output)
 }
 
 

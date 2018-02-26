@@ -1,0 +1,148 @@
+{
+	"label": "GOO TEST",
+		"description": "description of GOO TEST",
+		"type_op": "sequence",
+		"children": [{
+			"params": {
+				"duration": 4,
+				"label" : "seq1"
+			},
+			"type_op": "operation",
+			"criticality": "medium",
+			"description": "description of seq1",
+			"expectedDuration": 6,
+			"node": "master.demo",
+			"label": "seq1",
+			"target": "/data/isis/documents/TEST_GOO/runForAWhileWriteAFileAndReturn.gcp"
+		},
+
+		{
+			"functionalChain": "CCC",
+			"label": "cond1",
+			"description": "Condition of myFcpTest1",
+			"type_op": "condition",
+			"depends_on" : {
+				"type_op" : "operation",
+				"params" : {"duration":"10", "return":"OK","label" :"myGcpTest_test_cond TRUE"}, 
+				"description" : "Medium GCP", 
+				"label" : "cond",
+				"expectedDuration": 6, 
+				"node" : "scheduler.demo", 
+				"target" : "/data/isis/documents/TEST_GOO/runForAWhileWriteAFileAndReturn.gcp"
+			},
+			"condition_false" : {
+				"type_op" : "operation",
+				"params" : {"duration":"10", "return":"OK","label" :"GCP IF FALSE"}, 
+				"description" : "Medium GCP", 
+				"label" : "cofalse",
+				"expectedDuration": 6, 
+				"node" : "scheduler.demo", 
+				"target" : "/data/isis/documents/TEST_GOO/runForAWhileWriteAFileAndReturn.gcp"
+			},
+			"condition_true" : 
+
+
+			{
+				"label": "cotrue",
+				"description": "description of GOO TEST",
+				"type_op": "fork",
+				"children": [
+				{
+					"params": {
+						"duration": 4,
+						"label" : "seq1"
+					},
+					"type_op": "operation",
+					"criticality": "medium",
+					"description": "description of seq1",
+					"expectedDuration": 6,
+					"node": "master.demo",
+					"label": "seq2op1",
+					"target": "/data/isis/documents/TEST_GOO/runForAWhileWriteAFileAndReturn.gcp"
+				},
+				{
+					"params": {
+						"duration": 5,
+						"label": "seq2"
+					},
+					"type_op": "operation",
+					"criticality": "high",
+					"description": "description of seq2",
+					"expectedDuration": 7,
+					"node": "master.demo",
+					"label": "seq2op2",
+					"target": "/data/isis/documents/TEST_GOO/runForAWhileWriteAFileAndReturn.gcp"
+				},
+				{
+					"params": {
+						"duration": 7,
+						"label": "seq3"
+					},
+					"type_op": "operation",
+					"criticality": "high",
+					"description": "description of seq3",
+					"expectedDuration": 9,
+					"node": "master.demo",
+					"label": "seq2op3",
+					"target": "/data/isis/documents/TEST_GOO/runForAWhileWriteAFileAndReturn.gcp"
+				},
+				{
+					"label": "fork1",
+					"description": "description of fork1",
+					"type_op": "fork",
+					"children": [
+					{
+						"params": {
+							"duration": 5,
+							"label" : "fork1gcp1"
+						},
+						"type_op": "operation",
+						"criticality": "medium",
+						"description": "description of fork1gcp1",
+						"expectedDuration": 5,
+						"node": "master.demo",
+						"label": "fork1op1",
+						"target": "/data/isis/documents/TEST_GOO/runForAWhileWriteAFileAndReturn.gcp"
+					},
+					{
+						"label": "GOO TEST",
+						"description": "description of GOO TEST",
+						"type_op": "sequence",
+						"children": [
+						{
+							"params": {
+								"duration": 4,
+								"label" : "fork1seq1"
+							},
+							"type_op": "operation",
+							"criticality": "medium",
+							"description": "description of seq1",
+							"expectedDuration": 6,
+							"node": "master.demo",
+							"label": "Fork1op2",
+							"target": "/data/isis/documents/TEST_GOO/runForAWhileWriteAFileAndReturn.gcp"
+						},
+						{
+							"params": {
+								"duration": 5,
+								"label": "fork1seq2"
+							},
+							"type_op": "operation",
+							"criticality": "high",
+							"description": "description of seq2",
+							"expectedDuration": 7,
+							"node": "master.demo",
+							"label": "fork1op3",
+							"target": "/data/isis/documents/TEST_GOO/runForAWhileWriteAFileAndReturn.gcp"
+						}
+						]
+					}
+					]   
+				}
+				]
+			}
+
+
+		}
+	]
+}

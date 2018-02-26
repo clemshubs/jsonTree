@@ -1,43 +1,36 @@
-package main 
+package drawing_tools 
 import (
-		"fmt"
 		"testing"
-		. "github.com/clemshubs/jsonTree/drawing_tools"
+		"fmt"
        )
 
-func TestDrawOneBox(t  *testing.T){
-	if testing.Short(){
-		t.Skip("skippig test in shor mode.")
-	}
-
+func TestAddBlanks(t  *testing.T){
 	// init output array
-	output :=  make([][]string,1)
+	output :=  make([][]string,4)
 
-	// init box array
-	box :=  make([][]string,4)
+	output = addBlank(0,0,10,output)
 
-	box[0] = append(box[0]," "," "," "," ","-","-","-","-","-","-","-","-","-","-")
-	box[1] = append(box[1],"-","-","-",">","|","toto","","",""," "," "," "," ","|")
-	box[2] = append(box[2]," "," "," "," ","|","titi","","",""," "," "," "," ","|")
-	box[3] = append(box[3]," "," "," "," ","-","-","-","-","-","-","-","-","-","-")
-
-	_,_,output = DrawBox(0,0,box,output)
-
-	for i := 0; i < len(box); i++ {
-		for j := 0; j < len(box[i]);j++{
-			if box[i][j] != output[i][j]{
-				fmt.Print("Drawing expected\n")
-				PrintArray(box)
-				fmt.Print("Drawing found")
-				PrintArray(output)
-				t.Error("One box drawing failed")
-			}
+	for i:=0; i<len(output);i++{
+		if output[0][i]!=" "{
+			t.Error("Not enough blanks")
 		}
 	}
-
-
-
 }
+
+
+func TestAddLine(t  *testing.T){
+	// init output array
+	output :=  make([][]string,4)
+
+	output = addLine(0,0,10,output)
+
+	for i:=0; i<len(output);i++{
+		if output[0][i]!="-"{
+			t.Error("Not enough blanks")
+		}
+	}
+}
+
 
 func TestDrawTwoBoxes(t  *testing.T){
 	if testing.Short(){
@@ -76,8 +69,8 @@ func TestDrawTwoBoxes(t  *testing.T){
 
 	PrintArray(goodOutput)
 
-	_,step,output = DrawBox(0,step,box,output)
-	_,step,output = DrawBox(0,step,box,output)
+	_,step,output = drawBox(0,step,box,output)
+	_,step,output = drawBox(0,step,box,output)
 
 	for i := 0; i < len(box); i++ {
 		for j := 0; j < len(box[i]);j++{
@@ -87,6 +80,38 @@ func TestDrawTwoBoxes(t  *testing.T){
 				fmt.Print("Drawing found")
 				PrintArray(output)
 			t.Error("One box drawing failed")
+			}
+		}
+	}
+}
+
+
+func TestDrawOneBox(t  *testing.T){
+	if testing.Short(){
+		t.Skip("skippig test in shor mode.")
+	}
+
+	// init output array
+	output :=  make([][]string,1)
+
+	// init box array
+	box :=  make([][]string,4)
+
+	box[0] = append(box[0]," "," "," "," ","-","-","-","-","-","-","-","-","-","-")
+	box[1] = append(box[1],"-","-","-",">","|","toto","","",""," "," "," "," ","|")
+	box[2] = append(box[2]," "," "," "," ","|","titi","","",""," "," "," "," ","|")
+	box[3] = append(box[3]," "," "," "," ","-","-","-","-","-","-","-","-","-","-")
+
+	_,_,output = drawBox(0,0,box,output)
+
+	for i := 0; i < len(box); i++ {
+		for j := 0; j < len(box[i]);j++{
+			if box[i][j] != output[i][j]{
+				fmt.Print("Drawing expected\n")
+				PrintArray(box)
+				fmt.Print("Drawing found")
+				PrintArray(output)
+				t.Error("One box drawing failed")
 			}
 		}
 	}
