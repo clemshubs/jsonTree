@@ -2,6 +2,7 @@ package main
 import (
 		"fmt"
 		"testing"
+		. "github.com/clemshubs/jsonTree/drawing_tools"
        )
 
 func TestDrawOneBox(t  *testing.T){
@@ -20,15 +21,15 @@ func TestDrawOneBox(t  *testing.T){
 	box[2] = append(box[2]," "," "," "," ","|","titi","","",""," "," "," "," ","|")
 	box[3] = append(box[3]," "," "," "," ","-","-","-","-","-","-","-","-","-","-")
 
-	_,_,output = drawBox(0,0,box,output)
+	_,_,output = DrawBox(0,0,box,output)
 
 	for i := 0; i < len(box); i++ {
 		for j := 0; j < len(box[i]);j++{
 			if box[i][j] != output[i][j]{
 				fmt.Print("Drawing expected\n")
-				printArray(box)
+				PrintArray(box)
 				fmt.Print("Drawing found")
-				printArray(output)
+				PrintArray(output)
 				t.Error("One box drawing failed")
 			}
 		}
@@ -73,18 +74,18 @@ func TestDrawTwoBoxes(t  *testing.T){
 	goodOutput[3] = append(goodOutput[3],box[3]...)
 	goodOutput[3] = append(goodOutput[3],box1[3]...)
 
-	printArray(goodOutput)
+	PrintArray(goodOutput)
 
-	_,step,output = drawBox(0,step,box,output)
-	_,step,output = drawBox(0,step,box,output)
+	_,step,output = DrawBox(0,step,box,output)
+	_,step,output = DrawBox(0,step,box,output)
 
 	for i := 0; i < len(box); i++ {
 		for j := 0; j < len(box[i]);j++{
 			if box[i][j] != output[i][j]{
 				fmt.Print("Drawing expected\n")
-				printArray(goodOutput)
+				PrintArray(goodOutput)
 				fmt.Print("Drawing found")
-				printArray(output)
+				PrintArray(output)
 			t.Error("One box drawing failed")
 			}
 		}
