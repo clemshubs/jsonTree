@@ -183,7 +183,7 @@ func addConditionalBox(level int, levelFinal int, step int, output [][]string) (
 	
 	height := levelFinal-level+4
 	
-	length := 15
+	length := 14
 	box :=  make([][]string,height)
 
 
@@ -268,7 +268,7 @@ func addLine(level int, stepBefore int, stepFinal int, output [][]string) ([][]s
 			// 8 = 5 for the arrow, 3 for the final O
 			box[i] = make([]string,length)
 			for j:=0; j<len(box[i]);j++{
-				box[i][j]="."
+				box[i][j]=" "
 			}
 
 		}
@@ -337,7 +337,7 @@ func addBox(level int, step int, operation Operation, output [][]string) (int, i
 	box[1][4] = "│"
 
 	// drawing right
-	box[1][4+length] = "│"
+	box[1][4+length] = "├"
 	box[2][4+length] = "│"
 
 	// drawing 'in' arrow
@@ -347,7 +347,7 @@ func addBox(level int, step int, operation Operation, output [][]string) (int, i
 	box[1][4-4] = "─"
 
 	// dranwing 'final' o (to maybe be overwriten by next arrow)
-	box[1][4+length+1] = "o"
+	box[1][4+length+1] = "─"
 
 	// writing info
 	box[1][4+1]=operation.Type_op
@@ -404,26 +404,34 @@ func DrawGraph(level int, step int, operations []Operation, output [][]string) (
 
 				// Filling lines
 				addLine(tmp_level,tmp_step,maxStep+1,output)
-				output[tmp_level][maxStep]="!"
-				output[tmp_level+1][maxStep]="!"
-				output[tmp_level+1][maxStep-1]=">"
-				output[tmp_level+2][maxStep]="!"
-				output[tmp_level+3][maxStep]="!"
+				output[tmp_level][maxStep]="│"
+				output[tmp_level+1][maxStep]="┥"
+				output[tmp_level+1][maxStep-1]="→"
+				output[tmp_level+2][maxStep]="│"
+				output[tmp_level+3][maxStep]="│"
 
 			}
 		
-			i := tmp_level +1
+			i := tmp_level
 			// Opening bracket
 
 			output[level][stepBefore]="F"	
+			output[i+1][stepBefore]="└"
 
-			for output[i-1][stepBefore] != "F" {
+			for output[i][stepBefore] != "F" {
+				if output[i-4][stepBefore+1]==" "{
+					output[i-3][stepBefore]="├"
+				} else {
+					output[i-3][stepBefore]="│"
+				}
+				output[i-2][stepBefore]="│"
+				output[i-1][stepBefore]="│"
 				output[i][stepBefore]="│"
-				i--
+				i-=4
 			}
-			output[i][stepBefore]="┬"
+			output[i+1][stepBefore]="┬"
 			
-			step = maxStep +1
+			step = maxStep +2
 			level = tmp_level
 		}
 
@@ -446,6 +454,7 @@ func DrawGraph(level int, step int, operations []Operation, output [][]string) (
 		}
 
 	}
+	//PrintArray(output)
 	return level, step, output
 
 }
