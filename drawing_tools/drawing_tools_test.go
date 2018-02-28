@@ -1,4 +1,5 @@
 package drawing_tools 
+
 import (
 		"testing"
 		"fmt"
@@ -7,11 +8,13 @@ import (
 func TestAddBlanks(t  *testing.T){
 	// init output array
 	output :=  make([][]string,4)
+	start:=0
+	end:=10
 
-	output = addBlank(0,0,10,output)
+	output = addBlank(0,start,end,output)
 
-	for i:=0; i<len(output);i++{
-		if output[0][i]!=" "{
+	for i:=0; i<(end-start);i++{
+		if output[0][i]!=" " {
 			t.Error("Not enough blanks")
 		}
 	}
@@ -21,11 +24,13 @@ func TestAddBlanks(t  *testing.T){
 func TestAddLine(t  *testing.T){
 	// init output array
 	output :=  make([][]string,4)
+	start:=0
+	end:=10
 
-	output = addLine(0,0,10,output)
-
-	for i:=0; i<len(output);i++{
-		if output[0][i]!="-"{
+	output = addLine(0,start,end,output)
+	PrintArray(output)
+	for i:=0; i<(end-start-1);i++{
+		if output[1][i]!="─"{
 			t.Error("Not enough blanks")
 		}
 	}
@@ -43,19 +48,19 @@ func TestDrawTwoBoxes(t  *testing.T){
 	// init box array
 	box :=  make([][]string,4)
 
-	box[0] = append(box[0]," "," "," "," ","-","-","-","-","-","-","-","-","-","-")
-	box[1] = append(box[1],"-","-","-",">","|","toto","","",""," "," "," "," ","|")
-	box[2] = append(box[2]," "," "," "," ","|","titi","","",""," "," "," "," ","|")
-	box[3] = append(box[3]," "," "," "," ","-","-","-","-","-","-","-","-","-","-")
+	box[0] = append(box[0]," "," "," "," ","┌","─","─","─","─","─","─","─","─","┐")
+	box[1] = append(box[1],"─","─","─",">","│","toto","","",""," "," "," "," ","│")
+	box[2] = append(box[2]," "," "," "," ","│","titi","","",""," "," "," "," ","│")
+	box[3] = append(box[3]," "," "," "," ","└","─","─","─","─","─","─","─","─","┘")
 
 	step := 0
 	// init box array
 	box1 :=  make([][]string,4)
 
-	box1[0] = append(box1[0]," "," "," "," ","-","-","-","-","-","-","-","-","-","-")
-	box1[1] = append(box1[1],"-","-","-",">","|","tata","","",""," "," "," "," ","|")
-	box1[2] = append(box1[2]," "," "," "," ","|","titi","","",""," "," "," "," ","|")
-	box1[3] = append(box1[3]," "," "," "," ","-","-","-","-","-","-","-","-","-","-")
+	box1[0] = append(box1[0]," "," "," "," ","┌","─","─","─","─","─","─","─","─","┐")
+	box1[1] = append(box1[1],"─","─","─",">","│","tata","","",""," "," "," "," ","│")
+	box1[2] = append(box1[2]," "," "," "," ","│","titi","","",""," "," "," "," ","│")
+	box1[3] = append(box1[3]," "," "," "," ","└","─","─","─","─","─","─","─","─","┘")
 
 	goodOutput := make([][]string,4)
 	goodOutput[0] = append(goodOutput[0],box[0]...)
@@ -97,10 +102,10 @@ func TestDrawOneBox(t  *testing.T){
 	// init box array
 	box :=  make([][]string,4)
 
-	box[0] = append(box[0]," "," "," "," ","-","-","-","-","-","-","-","-","-","-")
-	box[1] = append(box[1],"-","-","-",">","|","toto","","",""," "," "," "," ","|")
-	box[2] = append(box[2]," "," "," "," ","|","titi","","",""," "," "," "," ","|")
-	box[3] = append(box[3]," "," "," "," ","-","-","-","-","-","-","-","-","-","-")
+	box[0] = append(box[0]," "," "," "," ","┌","─","─","─","─","─","─","─","─","┐")
+	box[1] = append(box[1],"─","─","─",">","│","toto","","",""," "," "," "," ","│")
+	box[2] = append(box[2]," "," "," "," ","│","titi","","",""," "," "," "," ","│")
+	box[3] = append(box[3]," "," "," "," ","└","─","─","─","─","─","─","─","─","┘")
 
 	_,_,output = drawBox(0,0,box,output)
 

@@ -199,9 +199,9 @@ func addConditionalBox(level int, levelFinal int, step int, output [][]string) (
 	}
 
 	for j:=0; j<len(box[1]);j++{
-		box[1][j]="-"
+		box[1][j]="─"
 	}
-
+	box[1][4]="┬"
 	box[1][5]="["
 	box[1][6]=" "
 	box[1][7]="S"
@@ -211,9 +211,10 @@ func addConditionalBox(level int, levelFinal int, step int, output [][]string) (
 
 
 	for j:=4; j<len(box[1]);j++{
-		box[levelFinal+1][j]="-"
+		box[levelFinal+1][j]="─"
 	}
 
+	box[height-3][4]="└"
 	box[height-3][5]="["
 	box[height-3][6]="S"
 	box[height-3][7]="I"
@@ -224,9 +225,9 @@ func addConditionalBox(level int, levelFinal int, step int, output [][]string) (
 
 	fmt.Printf("height %d\n",height)
 	fmt.Printf("box %d\n",len(box))
-	i:=height-3
-	for box[i][3]!="-"{
-		box[i][3]="|"
+	i:=height-4
+	for box[i][3]!="─"{
+		box[i][4]="│"
 		i--
 	}
 
@@ -267,13 +268,13 @@ func addLine(level int, stepBefore int, stepFinal int, output [][]string) ([][]s
 			// 8 = 5 for the arrow, 3 for the final O
 			box[i] = make([]string,length)
 			for j:=0; j<len(box[i]);j++{
-				box[i][j]=" "
+				box[i][j]="."
 			}
 
 		}
 
 		for j:=0; j<len(box[1])-1;j++{
-			box[1][j]="-"
+			box[1][j]="─"
 		}
 
 		//box[1][len(box[1])-1]=">"
@@ -316,29 +317,34 @@ func addBox(level int, step int, operation Operation, output [][]string) (int, i
 
 	}
 
+	box[0][4] = "┌"
 	// drawing the top
-	for i:=4; i<length+3+2; i++{
-		box[0][i] = "-"
+	for i:=5; i<length+3+1; i++{
+		box[0][i] = "─"
 	}
-
+	box[0][length+3+1] = "┐"
+	
+	
 	// drawing bottom
-       	for i:=4; i<length+3+2; i++{
-		box[3][i]="-"
+	box[3][4] = "└"
+       	for i:=5; i<length+3+1; i++{
+		box[3][i]="─"
 	}
+	box[3][length+3+1] = "┘"
 	
 	// drawing left 
-	box[2][4] = "|"
-	box[1][4] = "|"
+	box[2][4] = "│"
+	box[1][4] = "│"
 
 	// drawing right
-	box[1][4+length] = "|"
-	box[2][4+length] = "|"
+	box[1][4+length] = "│"
+	box[2][4+length] = "│"
 
 	// drawing 'in' arrow
-	box[1][4-1] = ">"
-	box[1][4-2] = "-"
-	box[1][4-3] = "-"
-	box[1][4-4] = "-"
+	box[1][4-1] = "→"
+	box[1][4-2] = "─"
+	box[1][4-3] = "─"
+	box[1][4-4] = "─"
 
 	// dranwing 'final' o (to maybe be overwriten by next arrow)
 	box[1][4+length+1] = "o"
@@ -390,7 +396,7 @@ func DrawGraph(level int, step int, operations []Operation, output [][]string) (
 
 			for _,child := range operation.Children {
 				 
-				tmp_level,tmp_step,output = DrawGraph(tmp_level+4,step+2,[]Operation{child},output)
+				tmp_level,tmp_step,output = DrawGraph(tmp_level+4,step+1,[]Operation{child},output)
 
 				if tmp_step > maxStep {
 					maxStep=tmp_step
@@ -411,11 +417,12 @@ func DrawGraph(level int, step int, operations []Operation, output [][]string) (
 
 			output[level][stepBefore]="F"	
 
-			for output[i][stepBefore] != "F" {
-				output[i][stepBefore]="|"
+			for output[i-1][stepBefore] != "F" {
+				output[i][stepBefore]="│"
 				i--
 			}
-
+			output[i][stepBefore]="┬"
+			
 			step = maxStep +1
 			level = tmp_level
 		}
