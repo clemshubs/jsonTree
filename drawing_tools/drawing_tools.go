@@ -96,10 +96,12 @@ func PrintArray(array [][]string){
 // the array with the new box
 func drawBox(level int, step int, box [][]string, output [][]string)(int,int,[][]string){
 
+	height := len(box)
+
 	// if a line doesn't exist, we add it
-	if len(output)<level+4 {
+	if len(output)<level+height {
 		outputL := len(output)
-		for i:=0; i<level+4-outputL; i++ {
+		for i:=0; i<level+height-outputL; i++ {
 			output = append(output,[]string{})
 		}
 	}
@@ -246,14 +248,13 @@ func addConditionalBox(level int, levelFinal int, step int, output [][]string) (
 //
 // OUTPUTS
 // tree with the new box
-func addLine(level int, stepBefore int, stepFinal int, output [][]string) ([][]string){
+func addLine(level int, stepBefore int, height int, stepFinal int, output [][]string) ([][]string){
 
 	// arbitrary length of the box
 	// TODO change with the actual size.
 	
-	length := stepFinal-stepBefore
+	length := stepFinal-stepBefore+1
 	
-	height := 4
 	box :=  make([][]string,height)
 
 
@@ -265,8 +266,9 @@ func addLine(level int, stepBefore int, stepFinal int, output [][]string) ([][]s
 		// init empty box
 
 		for i:= 0; i<height; i++ {
-			// 8 = 5 for the arrow, 3 for the final O
+			
 			box[i] = make([]string,length)
+			
 			for j:=0; j<len(box[i]);j++{
 				box[i][j]=" "
 			}
@@ -274,11 +276,12 @@ func addLine(level int, stepBefore int, stepFinal int, output [][]string) ([][]s
 		}
 
 		for j:=0; j<len(box[1])-1;j++{
-			box[1][j]="─"
+			box[height - 3][j]="─"
 		}
 
-		//box[1][len(box[1])-1]=">"
-
+		box[height - 3][len(box[1])-2]="→"
+		box[height - 3][len(box[1])-1]="┥"
+		PrintArray(box)
 		_,_,output = drawBox(level,stepBefore,box,output)
 	}
 
@@ -364,6 +367,25 @@ func addBox(level int, step int, operation Operation, output [][]string) (int, i
 }
 
 
+// Initialize a box
+//
+// INPUTS
+// length
+// height
+//
+// OUTPUTS
+// The damn empty box
+func initArray(length int, height int)([][]string){
+	box := make([][]string,height)
+	for i:=0; i<height; i++{
+		box[i]=make([]string,length)
+		for j:=0; j<length;j++{
+			box[i][j]=" "
+		}
+	}
+	return box
+}
+
 // Functional drawing of the graph
 // 
 // INPUTS
@@ -390,26 +412,22 @@ func DrawGraph(level int, step int, operations []Operation, output [][]string) (
 			stepBefore := step
 
 			maxStep := step
-			tmp_step :=0
 			tmp_level := level-4
 			sort.Sort(Operations(operation.Children))
 
 			for _,child := range operation.Children {
-				 
-				tmp_level,tmp_step,output = DrawGraph(tmp_level+4,step+1,[]Operation{child},output)
+				var tmp_level_after int 
+				var tmp_step_after int 
+				tmp_level_after,tmp_step_after,output = DrawGraph(tmp_level+4,step+1,[]Operation{child},output)
 
-				if tmp_step > maxStep {
-					maxStep=tmp_step
+				if tmp_step_after > maxStep {
+					maxStep=tmp_step_after
 				}
 
 				// Filling lines
-				addLine(tmp_level,tmp_step,maxStep+1,output)
-				output[tmp_level][maxStep]="│"
-				output[tmp_level+1][maxStep]="┥"
-				output[tmp_level+1][maxStep-1]="→"
-				output[tmp_level+2][maxStep]="│"
-				output[tmp_level+3][maxStep]="│"
-
+				addLine(tmp_level+4,tmp_step_after,tmp_level_after-tmp_level,maxStep+1,output)
+				tmp_level = tmp_level_after
+				PrintArray(output)
 			}
 		
 			i := tmp_level
@@ -418,21 +436,28 @@ func DrawGraph(level int, step int, operations []Operation, output [][]string) (
 			output[level][stepBefore]="F"	
 			output[i+1][stepBefore]="└"
 
+			output[i+1][maxStep]="─"
 			for output[i][stepBefore] != "F" {
-				if output[i-4][stepBefore+1]==" "{
-					output[i-3][stepBefore]="├"
+				if output[i][stepBefore+1]=="─" || output[i][stepBefore+1]=="┬" {
+					output[i][stepBefore]="├"
 				} else {
-					output[i-3][stepBefore]="│"
+					output[i][stepBefore]="│"
 				}
-				output[i-2][stepBefore]="│"
-				output[i-1][stepBefore]="│"
-				output[i][stepBefore]="│"
-				i-=4
+				if output[i][maxStep]==" "{
+					output[i][maxStep+1]="│"
+				}
+				i-=1
 			}
 			output[i+1][stepBefore]="┬"
 			
+			output[tmp_level+1][maxStep+1]="┴"
+			output[i+1][maxStep+1]="┐"
+			output[i+1][stepBefore-1] = "─"
 			step = maxStep +2
 			level = tmp_level
+
+			// closing bracket
+				
 		}
 
 		if operation.Type_op == "condition" {
@@ -452,7 +477,7 @@ func DrawGraph(level int, step int, operations []Operation, output [][]string) (
 			step = tmp_step
 			level = tmp_level
 		}
-
+		PrintArray(output)
 	}
 	//PrintArray(output)
 	return level, step, output
