@@ -467,8 +467,6 @@ func DrawGraph(level int, step int, operations []Operation, output [][]string) (
 
 
 			tmp_level,tmp_step,output = DrawGraph(level,step+14,[]Operation{*operation.Condition_True},output)
-			//output[level+1][step-3]="S"
-			//output[level+1][step-2]="I"
 			tmp_level,tmp_step,output = DrawGraph(tmp_level+4,step+14,[]Operation{*operation.Condition_False},output)
 
 			tmp_level,tmp_step,output = addConditionalBox(level,tmp_level,step,output)
