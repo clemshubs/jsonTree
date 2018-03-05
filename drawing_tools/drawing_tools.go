@@ -281,7 +281,6 @@ func addLine(level int, stepBefore int, height int, stepFinal int, output [][]st
 
 		box[height - 3][len(box[1])-2]="→"
 		box[height - 3][len(box[1])-1]="┥"
-		PrintArray(box)
 		_,_,output = drawBox(level,stepBefore,box,output)
 	}
 
@@ -427,7 +426,6 @@ func DrawGraph(level int, step int, operations []Operation, output [][]string) (
 				// Filling lines
 				addLine(tmp_level+4,tmp_step_after,tmp_level_after-tmp_level,maxStep+1,output)
 				tmp_level = tmp_level_after
-				PrintArray(output)
 			}
 		
 			i := tmp_level
@@ -475,9 +473,7 @@ func DrawGraph(level int, step int, operations []Operation, output [][]string) (
 			step = tmp_step
 			level = tmp_level
 		}
-		PrintArray(output)
 	}
-	//PrintArray(output)
 	return level, step, output
 
 }
