@@ -6,5 +6,7 @@ I would like the structure of the conditionnal tree to be configurable, but, hey
 
 The code may hurt some feelings, please be gentle, I start coding in Go.
 
+TEST: test pour une pull request
+
 Cheers,
 CHA
